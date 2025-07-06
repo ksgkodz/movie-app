@@ -7,26 +7,56 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY
 
 const API_OPTIONS = {
   method: 'GET',
-  header : {
-    accept : 'applications/json',
+  headers : {
+    accept : 'application/json',
     Authorization : `Bearer ${API_KEY}`
   }
 }
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [errorMessahe, setErrorMessage] = useState('');
-  const fetchMovies = async () => {
-    try {
+  const [errorMessage, setErrorMessage] = useState('');
+  const[movieList, setMovieList] = useState([])
+  const[isLoading, setIsLoading] = useState(false)
 
-    } 
+
+  const fetchMovies = async () => {
+
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+
+      const response = await fetch(endpoint, API_OPTIONS)
+
+      if(!response.ok) {
+      throw new Error('Failed to fetch Data')
+    }
+    
+    const data = await response.json();
+
+    if(data.Response === false){
+      setErrorMessage(data.Error || 'Failed to fetch Movies')
+      setMovieList([]);
+      return;
+    }
+
+    setMovieList(data.results || [])
+
+    }
+
     catch(error){
       console.error(`Error fetching Movies : ${error}`)
       setErrorMessage('Error Fetching movies... Please try again later...')
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  useEffect(()=> {},[])
+  useEffect(()=> {
+    fetchMovies();
+  },[])
   return (
   <main>
     <div className='pattern' />
@@ -38,6 +68,21 @@ const App = () => {
       {/* <h1 className='text-white'>{searchTerm}</h1> */}
       </header>
 
+      <section className='all-movies'>
+        <h2>All Movies</h2>
+
+        {isLoading ? (
+          <p className='text-white'>Loading ...</p>
+        ): errorMessage ? (
+          <p className='text-red-500'>{errorMessage}</p>
+        ) : (
+          <ul>
+            {movieList.map((movie) => (
+              <li key={movie.id} className='text-white'>{movie.title}</li>
+            ))}
+          </ul>
+        )}
+      </section>
       
     </div>
   </main>
