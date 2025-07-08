@@ -3,6 +3,7 @@ import Search from './components/Search'
 import Spinner from './components/Spinner'
 import MovieCard from './components/MovieCard'
 import { useDebounce } from 'react-use'
+import { updateSearchCount } from './appwrite'
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
@@ -18,8 +19,8 @@ const API_OPTIONS = {
 }
 
 const App = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const[searchTerm, setSearchTerm] = useState('');
+  const[errorMessage, setErrorMessage] = useState('');
   const[movieList, setMovieList] = useState([])
   const[isLoading, setIsLoading] = useState(false)
   const[debouncedSearchTerm, setDebounceSearchTerm] = useState('')
@@ -52,6 +53,8 @@ const App = () => {
     }
 
     setMovieList(data.results || [])
+
+    updateSearchCount();
 
     }
 
