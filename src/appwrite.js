@@ -5,5 +5,5 @@ const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID
 
 
 export const updateSearchCount = async () => {
-    
+    console.log(PROJECT_ID,COLLECTION_ID,DATABASE_ID);
 }
